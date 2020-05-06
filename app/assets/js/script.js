@@ -1,7 +1,7 @@
 $( document ).ready(function() {
     console.log('Ready to load the file');
   
-    let data_zip_code = $.ajax({
+    $.ajax({
 
       url: "docs/laposte_hexasmal.csv",
       type : 'GET',
@@ -15,8 +15,10 @@ $( document ).ready(function() {
       // Expect a `text` back from server
       dataType: 'text',
 
-      success: function(data){
-        //return $('#result').html(JSON.stringify(data)); // Afficher les données en dur
+      success: function(response){
+        //console.log(response);
+        CreateArrayZipCode(response);
+        //let data_zip_code = $('#result').html(JSON.stringify(data)); // Afficher les données en dur
       },
       error : function(jqXHR, textStatus){
         console.log(jqXHR);
@@ -25,32 +27,62 @@ $( document ).ready(function() {
       }
     });
 
+
+    // Récupération du Code Postal écrit dans le input
     let zip_code = $("#zip_code").change(function(){
       zip_code = $(this).val();
-      console.log(zip_code);
-      return zip_code;
+      //console.log(zip_code);
+      zip_code = parseInt(JSON.stringify(zip_code));
+      console.log(typeof zip_code);
     });
 
-    function CreateArrayZipCode(data_zip_code){
-      var data_city = this.split('/\r?\n|\r');
-      var array_zip_code = '<table class="table table-bordered table-striped">';
-      for(var count = 0; count<data_city.length; count ++){
+    zip_code = JSON.stringify(zip_code);
+    console.log(typeof zip_code);
+
+    
+    //let zip_code = 22400;
+
+
+
+
+    // Creation du tableau en gérant les données CSV
+    function CreateArrayZipCode(data_CSV_doc){
+      var data_city = data_CSV_doc.split("\r\n");
+      //console.log('XXXXXXXXXXXXXXXXXX')
+      //console.log(data_city); // BON
+      //$('#result').html(JSON.stringify(data_city));
+
+      var array_html_zip_code = '<table class="table table-bordered table-striped">';
+      ///console.log(array_html_zip_code);
+
+      for(var count = 0; count<data_city.length; count ++){ //récupération des lignes
         var cell_column= data_city[count].split(";");
-        console.log(cell_column);
-        array_zip_code += '<tr>';
-        for(var cell_column_count=0; cell_column_count<cell_column.length; cell_count++){
-          if (count==0){
-            array_zip_code+='<th><i>'+Cell_column[cell_column_count]+'</i></th>'
+        //console.log(cell_column); //BON
+        array_html_zip_code += '<tr>';
+        //Recupération des colonnes
+
+        for(var cell_column_count=0; cell_column_count<cell_column.length; cell_column_count++){ 
+          
+          if (count == 0){ // 1ere ligne avec les indicateurs(code postal, commune, ...)
+            array_html_zip_code+='<th><i>'+cell_column[cell_column_count]+'</i></th>'
+            //$('#result').html(JSON.stringify(array_html_zip_code)); //TEST
+          
           }
-          /*else{
+          else{
             if (cell_column[2]==zip_code){
 
-
+            array_html_zip_code+='<td>'+cell_column[cell_column_count]+'</td>';
+            //console.log(cell_column);
+            //console.log("XXXXXXXXXXXXXXXXXXXXXXX")
+            //console.log(array_html_zip_code);
+            $('#result').html(JSON.stringify(array_html_zip_code));
             }
-          }*/
+            
+          }
         }
       }
     };
+
 
 
 })  
